@@ -46,11 +46,29 @@ git clone git@github.com:ccwssy/hermes-agent-rules.git ~/.hermes/skills/agent-co
 
 ## 使用
 
-Hermes Agent 启动时自动加载此 skill，或手动加载：
+### ⚠️ 重要：安装 ≠ 生效
 
-```python
-skill_view('agent-collaboration-rules')
+装完 skill 只是把文件放进了目录。**Hermes 默认不会自动加载已安装的 skill**，需以下任一方式激活：
+
+### 激活方式
+
+| 方式 | 命令 | 范围 | 持久性 |
+|------|------|------|--------|
+| **手动加载** | `/skill agent-collaboration-rules`<br>`skill_view('agent-collaboration-rules')` | 当前会话 | ❌ 仅当前会话 |
+| **CLI 预加载** | `hermes -s agent-collaboration-rules` | 单次启动 | ❌ 仅该次 CLI |
+| **全局启用** | `hermes skills config --enable agent-collaboration-rules` | 所有新会话 | ✅ 永久生效 |
+
+### 进阶：让 Agent 自动扫描匹配加载
+
+如果希望 Agent 像高级助手那样**自动发现相关 skill 并加载**（而非手动指定），可以在 `SOUL.md` 中加入：
+
+```markdown
+## Skill 自动加载
+每次回复前扫描已安装的技能列表。如果某个 skill 与当前任务相关，
+自动调用 skill_view() 加载并遵循其规则。
 ```
+
+将此段写入 `~/.hermes/SOUL.md` 后，Agent 遇到相关任务时会自动匹配并加载此 skill，无需手动干预。
 
 ## 依赖
 
