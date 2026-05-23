@@ -17,32 +17,32 @@
 8. **输出风格** — 用户偏好适配
 9. **经验沉淀** — 持续改进循环
 
-完整内容见 `SKILL.md`。
+完整内容见 [SKILL.md](SKILL.md)。
 
 ## 安装
 
-### 方式一：通过 Hermes tap（需要仓库访问权限）
+### 方式一：Hermes tap（推荐）
 
 ```bash
-# 添加 tap
 hermes skills tap add ccwssy/hermes-agent-rules
-
-# 安装 skill
 hermes skills install agent-collaboration-rules
-
-# 查看
-skill_view('agent-collaboration-rules')
 ```
 
-### 方式二：直接拷贝
+### 方式二：直接下载
 
 ```bash
-scp -r agent-collaboration-rules user@目标机:~/.hermes/skills/
+# 下载
+curl -L https://github.com/ccwssy/hermes-agent-rules/archive/refs/heads/main.tar.gz | tar xz
+
+# 放到技能目录
+mv hermes-agent-rules-main ~/.hermes/skills/agent-collaboration-rules
 ```
 
-### 方式三：下载压缩包
+### 方式三：Git clone
 
-在 GitHub 仓库页面点击 **Code → Download ZIP**，解压到 `~/.hermes/skills/agent-collaboration-rules/`。
+```bash
+git clone git@github.com:ccwssy/hermes-agent-rules.git ~/.hermes/skills/agent-collaboration-rules
+```
 
 ## 使用
 
