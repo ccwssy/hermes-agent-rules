@@ -58,17 +58,28 @@ git clone git@github.com:ccwssy/hermes-agent-rules.git ~/.hermes/skills/agent-co
 | **CLI 预加载** | `hermes -s agent-collaboration-rules` | 单次启动 | ❌ 仅该次 CLI |
 | **全局启用** | `hermes skills config --enable agent-collaboration-rules` | 所有新会话 | ✅ 永久生效 |
 
-### 进阶：让 Agent 自动扫描匹配加载
+### 进阶：SOUL.md 自动调度（推荐）
 
-如果希望 Agent 像高级助手那样**自动发现相关 skill 并加载**（而非手动指定），可以在 `SOUL.md` 中加入：
+在 `~/.hermes/SOUL.md` 加入以下配置，让 Agent **在会话开始时一次性扫描所有 skill**，之后按需加载，不重复扫描：
 
 ```markdown
-## Skill 自动加载
-每次回复前扫描已安装的技能列表。如果某个 skill 与当前任务相关，
-自动调用 skill_view() 加载并遵循其规则。
+## Skill 自动调度
+- 会话开始时：调用 skills_list() 扫描一次所有可用 skill，建立索引
+- 每轮回复前：不重新全量扫描，根据当前任务关键词判断是否需要加载已知 skill
+- 加载后该 skill 规则在当前会话持续生效
+- 会话中途安装了新 skill，需 /reload-skills 刷新索引
 ```
 
-将此段写入 `~/.hermes/SOUL.md` 后，Agent 遇到相关任务时会自动匹配并加载此 skill，无需手动干预。
+**优化点对比：**
+
+| 维度 | 旧方案（每轮扫描） | 新方案（会话开始一次） |
+|------|-------------------|----------------------|
+| 每轮对话扫描 | 全部 skill | 0 次（仅索引匹配） |
+| 10 轮 100 skill | 1000 次操作 | 100 次操作固定 |
+| 100+ skill 压力 | 线性增长 | 固定成本 |
+| 中途装新 skill | 下轮自动发现 | ❌ 需 /reload-skills |
+
+> 旧方案在 skill 少时无感，但 50+ 后每轮扫描的开销会开始明显。新方案牺牲了"中途安装自动发现"（低频需求）换取稳定的性能。
 
 ## 依赖
 
