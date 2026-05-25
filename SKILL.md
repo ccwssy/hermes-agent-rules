@@ -1,11 +1,11 @@
 ---
 name: agent-collaboration-rules
-description: 13 条 Agent 协作核心规则 + Hermes Agent 适配实践
+description: 11 条 Agent 协作核心规则（适用于 Hermes Agent）+ Hermes 适配实践
 ---
 
 # Agent 协作规则
 
-源自 [Claude Code 最佳实践 13 条核心规则](https://github.com/shanraisshan/claude-code-best-practice)（54k star），适配 Hermes Agent。
+源自 [Claude Code 最佳实践 13 条核心规则](https://github.com/shanraisshan/claude-code-best-practice)（54k star），筛选出适用于 Hermes Agent 的 11 条规则 + 适配实践。
 
 ## 激活方式
 
@@ -46,7 +46,7 @@ description: 13 条 Agent 协作核心规则 + Hermes Agent 适配实践
 
 ---
 
-## 13 条核心规则
+## 11 条核心规则（适用于 Hermes Agent）
 
 ### 规则 1：编码前先思考
 
@@ -64,20 +64,11 @@ description: 13 条 Agent 协作核心规则 + Hermes Agent 适配实践
 
 先定义成功标准，然后循环迭代直到完成验证。不要告诉模型每一步该怎么做。
 
-### 规则 5：不要让模型做非语言类工作
-
-**模型负责：** 分类、起草、摘要、从非结构化文本中提取信息。
-**模型不负责：** 路由、重试逻辑、状态码处理、确定性转换。
-
 ### 规则 6：脚本优先，模型兜底
 
 确定性任务走脚本，不确定性任务走模型。
 优先级：原生函数 > Shell 命令 > 短脚本(<20行) > 长脚本 > 大模型。
 如果一个初中生能在 5 分钟内用 Excel 或命令行完成，就应该用脚本。
-
-### 规则 7：设置硬性 Token 预算
-
-单任务预算：4000 tokens。单会话预算：30000 tokens。
 
 ### 规则 8：暴露冲突，不要取平均
 
@@ -90,6 +81,7 @@ description: 13 条 Agent 协作核心规则 + Hermes Agent 适配实践
 ### 规则 10：测试验证意图，不只验证行为
 
 每个测试都要编码"为什么"该行为重要。测试通过 ≠ 代码正确。
+> 适用于开发场景（TDD 工作流），日常运维不涉及此规则。
 
 ### 规则 11：长运行操作需要检查点
 
@@ -107,7 +99,7 @@ description: 13 条 Agent 协作核心规则 + Hermes Agent 适配实践
 
 ## Hermes Agent 适配
 
-13 条规则在 Hermes Agent 场景下的具体落地。
+11 条规则在 Hermes Agent 场景下的具体落地。
 
 ### 适用性对照
 
@@ -117,12 +109,10 @@ description: 13 条 Agent 协作核心规则 + Hermes Agent 适配实践
 | 2. 简单优先 | ✅ 直接适用 | 风格指令"能一句话说完不用两段" |
 | 3. 外科手术式 | ✅ 直接适用 | 改配置不改多余，不碰没要求的 |
 | 4. 目标驱动 | ✅ 直接适用 | 改服务前报告→建议→等确认 |
-| 5. 非语言类不归模型 | ⚠️ 部分适用 | 精神对：确定性走 terminal/脚本。但 Hermes 是运维助手，调度脚本/发请求在其职责内 |
 | 6. 脚本优先 | ✅ 直接适用 | 云备份/STRM轮询/监控脚本，均走 cron+shell，非 LLM |
-| 7. 硬性 Token 预算 | ❌ 不适用 | Hermes 无 4000/30000 硬预算，context 管理靠 delegate_task 隔离+工具集限制 |
 | 8. 暴露冲突 | ✅ 直接适用 | 依赖链不成立直接指出，逻辑矛盾标记 |
 | 9. 写前先读 | ✅ 直接适用 | 改文件前读现有内容，搜相关处 |
-| 10. 测试验证意图 | ⚠️ 部分适用 | TDD skill 里有，但日常运维不写测试 |
+| 10. 测试验证意图 | ⚠️ 开发场景 | TDD skill 里有，日常运维不写测试 |
 | 11. 检查点 | ✅ 直接适用 | 改服务状态前报告现状→建议→确认；多步骤逐步确认 |
 | 12. 惯例优先 | ✅ 直接适用 | 官方源、匹配现有规范、不引入新花样 |
 | 13. 失败大声说 | ✅ 直接适用 | "宁可承认不确定也不给错误结论" |
@@ -152,7 +142,7 @@ delegate_task(goal="处理文件")
 - batch 模式用 `tasks` 数组做并行分解
 - 每个子任务完成后总结做了什么（规则 11）
 
-### 上下文预算管理（规则 6/7 落地）
+### 上下文预算管理（规则 6 落地）
 
 Hermes 无硬性 token 预算但用等效策略：
 - 大量中间输出用 `delegate_task` 隔离
